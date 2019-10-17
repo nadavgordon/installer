@@ -30,15 +30,18 @@ adduser \
    git
 
 echo "Create directory structure" | log
-mkdir -p /var/lib/gitea/{custom,data,indexers,public,log}
-chown git:git /var/lib/gitea/{data,indexers,log}
-chmod 750 /var/lib/gitea/{data,indexers,log}
+# mkdir -p /var/lib/gitea/{custom,data,indexers,public,log}
+mkdir -p /var/lib/gitea/{custom,data,log}
+# chown git:git /var/lib/gitea/{data,indexers,log}
+chown -R git:git /var/lib/gitea/
+# chmod 750 /var/lib/gitea/{data,indexers,log}
+chmod -R 750 /var/lib/gitea/
 mkdir /etc/gitea
 chown root:git /etc/gitea
 chmod 770 /etc/gitea
 
 echo "Download and install binary" | log
-curlDownload https://dl.gitea.io/gitea/1.5.0/gitea-1.5.0-linux-amd64 gitea
+curlDownload https://dl.gitea.io/gitea/1.9.3/gitea-1.9.3-linux-amd64 gitea
 chmod +x gitea
 cp gitea /usr/local/bin/
 
@@ -150,6 +153,10 @@ EOF
 
 ln -s /etc/nginx/sites-available/git /etc/nginx/sites-enabled
 systemctl reload nginx.service
+
+echo "Re harden security " | log
+chmod 750 /etc/gitea
+chmod 640 /etc/gitea/app.ini
 
 tagScript success
 
