@@ -7,7 +7,7 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 echo "Downloading docker-machine from source repository" | log
-base=https://github.com/docker/machine/releases/download/v0.16.0
+base=https://github.com/docker/machine/releases/download/v0.16.2
 curl -L --max-redirs 3 --retry 3 --retry-connrefused --retry-delay 2 --max-time 30 --url $base/docker-machine-$(uname -s)-$(uname -m) >/tmp/docker-machine
 waitOrStop 0
 
@@ -18,7 +18,7 @@ waitOrStop 0
 echo "Downloading docker-machine bash auto-complete strings" | log
 mkdir -p /tmp/complete
 cd /tmp/complete
-base=https://raw.githubusercontent.com/docker/machine/v0.16.0
+base=https://raw.githubusercontent.com/docker/machine/v0.16.2
 for i in docker-machine-prompt.bash docker-machine-wrapper.bash docker-machine.bash
 do
     # wget "$base/contrib/completion/bash/${i}" -P /etc/bash_completion.d
