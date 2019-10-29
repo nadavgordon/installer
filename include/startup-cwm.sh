@@ -57,7 +57,7 @@ function updateServerDescription() {
 
 function getServerDescription() {
 
-    description=$(curl --location -f --retry-connrefused --retry 3 --retry-delay 2 -H "AuthClientId: ${CWM_APICLIENTID}" -H "AuthSecret: ${CWM_APISECRET}" "https://$CWM_URL/svc/server/$CWM_UUID/overview" | grep -Po '(?<="description":")(.*?)(?=",")')
+    description=$(curl -v --location -f --retry-connrefused --retry 3 --retry-delay 2 -H "AuthClientId: ${CWM_APICLIENTID}" -H "AuthSecret: ${CWM_APISECRET}" "https://$CWM_URL/svc/server/$CWM_UUID/overview" | grep -Po '(?<="description":")(.*?)(?=",")')
     
     local exitCode=$?
     if [ $exitCode -ne 0 ]; then
@@ -109,6 +109,14 @@ function setServerDescriptionTXT() {
 
     updateServerDescription "$fileContent"
 
+}
+
+function getValueFromConfig () {
+
+    echo "CWM_OSDescription: $CWM_OSDescription"
+    echo "CWM_guestDescription: $CWM_guestDescription"
+
+    diff <(echo "$CWM_OSDescription") <(echo "$CWM_guestDescription")
 }
 
 function getServerIP() {
