@@ -6,7 +6,7 @@ elif [ -f "../include/startup.sh" ]; then
     . ../include/startup.sh
 fi
 
-checkTagExist nginx.success
+# checkTagExist nginx.success
 
 rootDir=$(rootDir)
 erlangVersion=1:22.1.\*
@@ -36,36 +36,40 @@ rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
 rabbitmqctl delete_user guest
 
 echo "Opening web UI to remote access" | log
+add-apt-repository ppa:certbot/certbot -y | log
+apt install python-certbot-nginx -y | log
 # Enabling certbot for rabbitmq
 mkdir -p /var/lib/letsencrypt/.well-known
 chgrp -R www-data /var/lib/letsencrypt
 chmod -R g+s /var/lib/letsencrypt
 # remove default vhosts
-unlink /etc/nginx/sites-enabled/default
-unlink /etc/nginx/sites-enabled/default-ssl
+# unlink /etc/nginx/sites-enabled/default
+# unlink /etc/nginx/sites-enabled/default-ssl
 # copy configs to nginx folders
-cp $rootDir/tweaks/extras/rabbitmq-nginx/letsencrypt.conf /etc/nginx/snippets/
-cp -f $rootDir/tweaks/extras/rabbitmq-nginx/rabbitmq-certbot.conf /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-available/rabbitmq-certbot.conf /etc/nginx/sites-enabled/
-systemctl restart nginx
+# cp $rootDir/tweaks/extras/rabbitmq-nginx/letsencrypt.conf /etc/nginx/snippets/
+# cp -f $rootDir/tweaks/extras/rabbitmq-nginx/rabbitmq-certbot.conf /etc/nginx/sites-available/
+# ln -s /etc/nginx/sites-available/rabbitmq-certbot.conf /etc/nginx/sites-enabled/
+# systemctl restart nginx
 
 # creating certbot
 certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${rabbitmqDomain}
 waitOrStop 0
-cp -f $rootDir/tweaks/extras/rabbitmq-nginx/rabbitmq-nginx.conf /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-available/rabbitmq-nginx.conf /etc/nginx/sites-enabled/
-unlink /etc/nginx/sites-enabled/rabbitmq-certbot.conf
+# cp -f $rootDir/tweaks/extras/rabbitmq-nginx/rabbitmq-nginx.conf /etc/nginx/sites-available/
+# ln -s /etc/nginx/sites-available/rabbitmq-nginx.conf /etc/nginx/sites-enabled/
+# unlink /etc/nginx/sites-enabled/rabbitmq-certbot.conf
 # add keys to ssl configs
-sed -i "s|/path/to/your.key|/etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem|" /etc/nginx/sites-available/rabbitmq-nginx.conf
-sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem|" /etc/nginx/sites-available/rabbitmq-nginx.conf
-systemctl restart nginx
+# sed -i "s|/path/to/your.key|/etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem|" /etc/nginx/sites-available/rabbitmq-nginx.conf
+# sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem|" /etc/nginx/sites-available/rabbitmq-nginx.conf
+# systemctl restart nginx
 
 echo "Starting Rabbitmq service" | log
 systemctl enable rabbitmq-server
 systemctl start rabbitmq-server
 
 echo "Adding descriptions" | log
-descriptionAppend "RabbitMQ web UI: https://${CWM_SERVERIP}"
+descriptionAppend "RabbitMQ web UI: https://${rabbitmqDomain}"
+descriptionAppend "RabbitMQ IP address: https://${CWM_SERVERIP}"
+descriptionAppend " "
 descriptionAppend "RabbitMQ admin user: admin"
 descriptionAppend "RabbitMQ admin password: ${ADMINPASSWORD}"
 descriptionAppend " "
