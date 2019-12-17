@@ -60,6 +60,24 @@ sed -i "s|/path/to/your.key|/etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem|
 sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem|" /etc/nginx/sites-available/rabbitmq-nginx.conf
 systemctl restart nginx
 
+cat << EOF > /etc/rabbitmq/rabbitmq.conf
+
+listeners.ssl.default = 5671
+management.ssl.port   = 15671
+management.tcp.port   = 15672
+
+ssl_options.cacertfile = /etc/letsencrypt/live/${rabbitmqDomain}/chain.pem
+ssl_options.certfile   = /etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem
+ssl_options.keyfile    = /etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem
+ssl_options.verify     = verify_peer
+ssl_options.fail_if_no_peer_cert = false
+
+management.ssl.cacertfile = /etc/letsencrypt/live/${rabbitmqDomain}/chain.pem
+management.ssl.certfile   = /etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem
+management.ssl.keyfile    = /etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem
+
+EOF
+
 echo "Starting Rabbitmq service" | log
 systemctl enable rabbitmq-server
 systemctl start rabbitmq-server
