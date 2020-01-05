@@ -65,7 +65,6 @@ cat << EOF > /etc/rabbitmq/rabbitmq.conf
 
 listeners.ssl.default = 5671
 management.ssl.port   = 15671
-management.tcp.port   = 15672
 
 ssl_options.cacertfile = /etc/letsencrypt/live/${rabbitmqDomain}/chain.pem
 ssl_options.certfile   = /etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem
