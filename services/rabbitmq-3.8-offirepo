@@ -70,7 +70,7 @@ ssl_options.cacertfile = /etc/letsencrypt/live/${rabbitmqDomain}/chain.pem
 ssl_options.certfile   = /etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem
 ssl_options.keyfile    = /etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem
 ssl_options.verify     = verify_peer
-ssl_options.fail_if_no_peer_cert = false
+ssl_options.fail_if_no_peer_cert = true
 
 management.ssl.cacertfile = /etc/letsencrypt/live/${rabbitmqDomain}/chain.pem
 management.ssl.certfile   = /etc/letsencrypt/live/${rabbitmqDomain}/fullchain.pem
