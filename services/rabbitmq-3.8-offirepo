@@ -86,9 +86,10 @@ chmod -R 775 /etc/letsencrypt/archive/${rabbitmqDomain}
 echo "Starting Rabbitmq service" | log
 systemctl enable rabbitmq-server
 systemctl start rabbitmq-server
+systemctl restart rabbitmq-server
 
 echo "Adding descriptions" | log
-descriptionAppend "RabbitMQ web UI: https://${CWM_SERVERIP}"
+descriptionAppend "RabbitMQ web UI: https://${rabbitmqDomain}"
 descriptionAppend "RabbitMQ admin user: admin"
 descriptionAppend "RabbitMQ admin password: ${ADMINPASSWORD}"
 descriptionAppend " "
