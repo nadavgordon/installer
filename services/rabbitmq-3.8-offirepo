@@ -78,6 +78,11 @@ management.ssl.keyfile    = /etc/letsencrypt/live/${rabbitmqDomain}/privkey.pem
 
 EOF
 
+chmod 771 /etc/letsencrypt/live
+chmod -R 775 /etc/letsencrypt/live/${rabbitmqDomain}
+chmod 771 /etc/letsencrypt/archive
+chmod -R 775 /etc/letsencrypt/archive/${rabbitmqDomain}
+
 echo "Starting Rabbitmq service" | log
 systemctl enable rabbitmq-server
 systemctl start rabbitmq-server
