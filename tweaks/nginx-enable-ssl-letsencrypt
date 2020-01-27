@@ -10,6 +10,11 @@ checkTagExist nginx.success
 rootDir=$(rootDir)
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
+echo "Enabling certbot for machine" | log
+mkdir -p /var/lib/letsencrypt/.well-known
+chgrp www-data /var/lib/letsencrypt
+chmod g+s /var/lib/letsencrypt
+
 echo "Preparing nginx for certbot certification" | log
 cp $rootDir/tweaks/letsencrypt-nginx-route.conf /etc/nginx/snippets/
 cp $rootDir/tweaks/letsencrypt-nginx-register.conf /etc/nginx/sites-available/
@@ -21,6 +26,8 @@ echo "Generating letsencrypt certificates with certbot" | log
 certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${domainName}
 waitOrStop 0
 unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
+# remove default vhosts
+unlink /etc/nginx/sites-enabled/default
 
 echo "Attaching certificates to nginx configuration" | log
 cp $rootDir/tweaks/letsencrypt-nginx-certs.conf /etc/nginx/snippets/
