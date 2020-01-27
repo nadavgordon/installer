@@ -31,10 +31,17 @@ unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
 
 echo "Attaching certificates to nginx configuration" | log
 cp $rootDir/tweaks/letsencrypt-nginx-certs.conf /etc/nginx/snippets/
-certsPath=/etc/nginx/snippets/letsencrypt-nginx-certs.conf
-sed -i "s|/path/to/your.key|/etc/letsencrypt/live/${domainName}/${domainName}.key|" $certsPath
-sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${domainName}/${domainName}.crt|" $certsPath
-sed -i "s|/path/to/your.chain|/etc/letsencrypt/live/${domainName}/${domainName}.chain.crt|" $certsPath
+certsRoute=/etc/nginx/snippets/letsencrypt-nginx-certs.conf
+certsPath=/etc/letsencrypt/live/${domainName}
+modPrivKey=$certsPath/${domainName}.key
+modFullChain=$certsPath/${domainName}.crt
+modChain=$certsPath/${domainName}.chain.crt
+mv $certsPath/privkey.pem $modPrivKey
+mv $certsPath/fullchain.pem $modFullChain
+mv $certsPath/chain.pem $modChain
+sed -i "s|/path/to/your.key|$modPrivKey|" $certsRoute
+sed -i "s|/path/to/your.crt|$modFullChain|" $certsRoute
+sed -i "s|/path/to/your.chain|$modChain|" $certsRoute
 
 echo "Creating an SSL vhost" | log
 cat << EOF >> /etc/nginx/sites-available/default-ssl
@@ -64,7 +71,7 @@ echo "Restart NGINX service" | log
 systemctl restart nginx.service
 waitOrStop 0
 
-descriptionAppend "SSL certificates location: /etc/letsencrypt/live/${domainName}/"
+descriptionAppend "SSL certificates location: $certsPath/"
 descriptionAppend " "
 
 tag ssl-ready.success
