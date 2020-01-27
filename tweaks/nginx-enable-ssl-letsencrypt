@@ -7,6 +7,8 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 checkTagExist nginx.success
+checkTagExist certbot-nginx.success
+
 rootDir=$(rootDir)
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 certsPath=/etc/letsencrypt/live/${domainName}
