@@ -41,6 +41,7 @@ systemctl restart nginx.service
 descriptionAppend "SSL certificates location: /etc/ssl/"
 descriptionAppend " "
 
+tag ssl-ready.success
 tagScript success
 
 exit 0
