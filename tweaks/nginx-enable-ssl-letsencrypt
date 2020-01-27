@@ -9,6 +9,13 @@ fi
 checkTagExist nginx.success
 rootDir=$(rootDir)
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
+certsPath=/etc/letsencrypt/live/${domainName}
+certsRoute=/etc/nginx/snippets/letsencrypt-nginx-certs.conf
+renewConf=/etc/letsencrypt/renewal/$domainName.conf
+modPrivKey=$certsPath/${domainName}.key
+modCert=$certsPath/${domainName}.crt
+modChain=$certsPath/${domainName}.chain.crt
+modFullChain=$certsPath/${domainName}.fullchain.crt
 
 echo "Enabling certbot for machine" | log
 mkdir -p /var/lib/letsencrypt/.well-known
@@ -29,18 +36,20 @@ certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/lets
 waitOrStop 0
 unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
 
-echo "Attaching certificates to nginx configuration" | log
-cp $rootDir/tweaks/letsencrypt-nginx-certs.conf /etc/nginx/snippets/
-certsRoute=/etc/nginx/snippets/letsencrypt-nginx-certs.conf
-certsPath=/etc/letsencrypt/live/${domainName}
-modPrivKey=$certsPath/${domainName}.key
-modFullChain=$certsPath/${domainName}.crt
-modChain=$certsPath/${domainName}.chain.crt
+echo "Configuring certbot renewal service" | log
 mv $certsPath/privkey.pem $modPrivKey
-mv $certsPath/fullchain.pem $modFullChain
+mv $certsPath/cert.pem $modCert
 mv $certsPath/chain.pem $modChain
+mv $certsPath/fullchain.pem $modFullChain
+sed -i "s|$certsPath/privkey.pem|$modPrivKey|" $renewConf
+sed -i "s|$certsPath/cert.pem|$modCert|" $renewConf
+sed -i "s|$certsPath/fullchain.pem|$modFullChain|" $renewConf
+sed -i "s|$certsPath/chain.pem|$modChain|" $renewConf
+
+echo "Attaching certificates to nginx configuration" | log
+cp $rootDir/tweaks/letsencrypt-nginx-certs.conf $certsRoute
 sed -i "s|/path/to/your.key|$modPrivKey|" $certsRoute
-sed -i "s|/path/to/your.crt|$modFullChain|" $certsRoute
+sed -i "s|/path/to/your.crt|$modCert|" $certsRoute
 sed -i "s|/path/to/your.chain|$modChain|" $certsRoute
 
 echo "Creating an SSL vhost" | log
