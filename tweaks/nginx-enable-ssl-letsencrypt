@@ -32,9 +32,9 @@ unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
 echo "Attaching certificates to nginx configuration" | log
 cp $rootDir/tweaks/letsencrypt-nginx-certs.conf /etc/nginx/snippets/
 certsPath=/etc/nginx/snippets/letsencrypt-nginx-certs.conf
-sed -i "s|/path/to/your.key|/etc/letsencrypt/live/${domainName}/privkey.pem|" $certsPath
-sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${domainName}/fullchain.pem|" $certsPath
-sed -i "s|/path/to/your.chain|/etc/letsencrypt/live/${domainName}/chain.pem|" $certsPath
+sed -i "s|/path/to/your.key|/etc/letsencrypt/live/${domainName}/${domainName}.key|" $certsPath
+sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${domainName}/${domainName}.crt|" $certsPath
+sed -i "s|/path/to/your.chain|/etc/letsencrypt/live/${domainName}/${domainName}.chain.crt|" $certsPath
 
 echo "Creating an SSL vhost" | log
 cat << EOF >> /etc/nginx/sites-available/default-ssl
