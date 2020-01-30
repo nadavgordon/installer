@@ -15,6 +15,7 @@ phpVersion=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d".")
 appVersion=18.0.0
 appPath=/var/www/html
 rootDir=$(rootDir)
+domain="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 ndisk="$(lsblk)"
 if [[ $ndisk == *"sdb"* ]]; then
@@ -44,12 +45,13 @@ echo "Installing application" | log
 cd $appPath
 sudo -u www-data php occ  maintenance:install --database "mysql" --database-name "nextcloud"  --database-user "nextcloud" --database-pass "${ADMINPASSWORD}" --admin-user "admin" --admin-pass "${ADMINPASSWORD}"
 sudo -u www-data php occ db:convert-filecache-bigint --no-interaction
+sudo -u www-data php occ db:add-missing-indices
 
 echo "Configuring nginx" | log
 # Copy Virtual Host
-cp $rootDir/tweaks/extras/nextcloud15-nginx/nextcloud15-nginx-config /etc/nginx/sites-available/nextcloud15
+cp $rootDir/tweaks/extras/nextcloud15-nginx/nextcloud15-nginx-config /etc/nginx/sites-available/
 # Symlink nextcloud vhost
-ln -s /etc/nginx/sites-available/nextcloud15 /etc/nginx/sites-enabled/nextcloud15
+ln -s /etc/nginx/sites-available/nextcloud15-nginx-config /etc/nginx/sites-enabled/
 # Remove default vhosts
 unlink /etc/nginx/sites-enabled/default
 unlink /etc/nginx/sites-enabled/default-ssl
@@ -77,11 +79,11 @@ sed -i "s/;opcache.revalidate_freq=2/opcache.revalidate_freq=1/g" $phpIniPath
 # modify www.conf settings
 sed -i '/env\[PATH\]/s/^;//g' /etc/php/$phpVersion/fpm/pool.d/www.conf
 # Add Server IP to Trusted Servers
-sed -i "s/0 => 'localhost',/0 => 'localhost', 1 => '${CWM_SERVERIP}',/" $appPath/config/config.php
+sed -i "s/0 => 'localhost',/0 => 'localhost', 1 => '${CWM_SERVERIP}', 2 => '${domain}',/" $appPath/config/config.php
 systemctl restart php$phpVersion-fpm.service
 
 echo "Adding descriptions" | log
-descriptionAppend "Nextcloud Web UI: https://${CWM_SERVERIP//./-}.cloud-xip.io/"
+descriptionAppend "Nextcloud Web UI: https://${domain}/"
 descriptionAppend "Nextcloud Username: admin "
 descriptionAppend "Nextcloud Password: ${ADMINPASSWORD} "
 descriptionAppend " "
