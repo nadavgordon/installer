@@ -47,7 +47,7 @@ sudo -u www-data php occ db:convert-filecache-bigint --no-interaction
 
 echo "Configuring nginx" | log
 # Copy Virtual Host
-cp $rootDir/tweaks/extras/nextcloud15-nginx/nextcloud15-nginx-config /etc/nginx/sites-available/nextcloud15
+cp $rootDir/tweaks/extras/nextcloud-nginx/nextcloud15-nginx-config.conf /etc/nginx/sites-available/nextcloud15
 # Symlink nextcloud vhost
 ln -s /etc/nginx/sites-available/nextcloud15 /etc/nginx/sites-enabled/nextcloud15
 # Remove default vhosts

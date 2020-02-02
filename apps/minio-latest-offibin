@@ -7,6 +7,7 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 rootDir=$(rootDir)
+certsLocation=/etc/minio/certs
 
 echo "Adding Minio user" | log
 useradd --system minio-user --shell /sbin/nologin
@@ -28,7 +29,7 @@ chown minio-user:minio-user /etc/minio
 echo "MINIO_VOLUMES=\"/minio/\"" >> /etc/default/minio
 ips=$(getServerIPAll)
 echo "MINIO_PUBLIC_IPS=${ips// /,}" >> /etc/default/minio
-echo "MINIO_OPTS=\"-C /etc/minio --certs-dir /etc/minio/certs --address :443\"" >> /etc/default/minio
+echo "MINIO_OPTS=\"-C /etc/minio --certs-dir $certsLocation --address :443\"" >> /etc/default/minio
 setcap 'cap_net_bind_service=+ep' /usr/local/bin/minio
 
 echo "Adding Systemd Service" | log
@@ -36,9 +37,9 @@ curlDownload https://raw.githubusercontent.com/minio/minio-service/master/linux-
 mv minio.service /etc/systemd/system
 
 echo "Generating self-signed certificate" | log
-mkdir -p /etc/minio/certs/
-openssl req -x509 -sha256 -newkey rsa:2048 -keyout /etc/minio/certs/private.key -out /etc/minio/certs/public.crt -days 1024 -nodes -subj '/CN=localhost'
-chown -R minio-user:minio-user /etc/minio/certs
+mkdir -p $certsLocation/
+openssl req -x509 -sha256 -newkey rsa:2048 -keyout $certsLocation/private.key -out $certsLocation/public.crt -days 1024 -nodes -subj '/CN=localhost'
+chown -R minio-user:minio-user $certsLocation
 
 echo "Starting Minio service" | log
 systemctl enable minio
