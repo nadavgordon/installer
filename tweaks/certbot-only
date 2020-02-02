@@ -21,7 +21,7 @@ apt install certbot -y
 checkPackageInstalled certbot
 
 echo "Retrieving SSL domain certification" | log
-certbot certonly --standalone --preferred-challenges http -d $domainName
+certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --dry-run
 waitOrStop 0
 
 tagScript success
