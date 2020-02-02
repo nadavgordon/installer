@@ -15,13 +15,13 @@ ufw allow http
 echo "Installing certbot" | log
 apt install software-properties-common -y
 add-apt-repository universe
-add-apt-repository ppa:certbot/certbot
+add-apt-repository ppa:certbot/certbot -y
 apt update
 apt install certbot -y
 checkPackageInstalled certbot
 
 echo "Retrieving SSL domain certification" | log
-certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --dry-run
+certbot certonly -n --standalone --preferred-challenges http --email ${ADMINEMAIL} -d ${domainName} --dry-run
 waitOrStop 0
 
 tagScript success
