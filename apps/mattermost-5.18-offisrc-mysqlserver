@@ -8,6 +8,7 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 checkTagExist mysqld.success
+checkTagExist ssl-ready.success
 
 appVersion=5.18.2
 appPath=/opt/mattermost

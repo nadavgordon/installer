@@ -22,9 +22,9 @@ checkPackageInstalled certbot
 
 echo "Retrieving SSL domain certification" | log
 certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --dry-run
-# --cert-name CERTNAME
 waitOrStop 0
 
+tag ssl-ready.success
 tagScript success
 
 exit 0
