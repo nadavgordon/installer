@@ -8,8 +8,8 @@ fi
 
 rootDir=$(rootDir)
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-certsLocation=/etc/letsencrypt/live/${domainName}
-# certsLocation=/etc/minio/certs
+certsLetsencrypt=/etc/letsencrypt/live/${domainName}
+certsMinio=/etc/minio/certs
 
 echo "Adding Minio user" | log
 useradd --system minio-user --shell /sbin/nologin
@@ -31,7 +31,7 @@ chown minio-user:minio-user /etc/minio
 echo "MINIO_VOLUMES=\"/minio/\"" >> /etc/default/minio
 ips=$(getServerIPAll)
 echo "MINIO_PUBLIC_IPS=${ips// /,}" >> /etc/default/minio
-echo "MINIO_OPTS=\"-C /etc/minio --certs-dir $certsLocation --address :443\"" >> /etc/default/minio
+echo "MINIO_OPTS=\"-C /etc/minio --certs-dir $certsMinio --address :443\"" >> /etc/default/minio
 # echo "MINIO_DOMAIN=${domainName}" >> /etc/default/minio 
 setcap 'cap_net_bind_service=+ep' /usr/local/bin/minio
 
@@ -39,10 +39,24 @@ echo "Adding Systemd Service" | log
 curlDownload https://raw.githubusercontent.com/minio/minio-service/master/linux-systemd/minio.service
 mv minio.service /etc/systemd/system
 
-#echo "Generating self-signed certificate" | log
-#mkdir -p $certsLocation/
-#openssl req -x509 -sha256 -newkey rsa:2048 -keyout $certsLocation/private.key -out $certsLocation/public.crt #-days 1024 -nodes -subj '/CN=localhost'
-#chown -R minio-user:minio-user $certsLocation
+echo "Generating certificates" | log
+mkdir -p $certsLocation/
+cp ${certsLetsencrypt}/fullchain.pem ${certsMinio}/public.crt
+cp ${certsLetsencrypt}/privkey.pem ${certsMinio}/private.key
+chown -R minio-user:minio-user $certsMinio
+
+cat << EOF > ${certsUpdateService}
+
+certbot -q renew
+cp ${certsLetsencrypt}/fullchain.pem ${certsMinio}/public.crt
+cp ${certsLetsencrypt}/privkey.pem ${certsMinio}/private.key
+chown -R minio-user:minio-user $certsMinio
+
+EOF
+chmod +x ${certsUpdateService}
+backupFile /lib/systemd/system/certbot.service
+sed -i '\|ExecStart|s|-q renew|-q renew --post-hook "/bin/bash '${certsUpdateService}'"|' /lib/systemd/system/certbot.service
+systemctl daemon-reload
 
 echo "Starting Minio service" | log
 systemctl enable minio

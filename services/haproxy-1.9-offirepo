@@ -54,7 +54,8 @@ EOF
 chmod +x ${certsUpdateService}
 
 backupFile /lib/systemd/system/certbot.service
-sed -i '\|ExecStart|s|=.*|=/bin/bash '"${certsUpdateService}"'|' /lib/systemd/system/certbot.service
+# sed -i '\|ExecStart|s|=.*|=/bin/bash '"${certsUpdateService}"'|' /lib/systemd/system/certbot.service
+sed -i '\|ExecStart|s|-q renew|-q renew --post-hook "/bin/bash '${certsUpdateService}'"|' /lib/systemd/system/certbot.service
 systemctl daemon-reload
 
 echo "Adding descriptions" | log
