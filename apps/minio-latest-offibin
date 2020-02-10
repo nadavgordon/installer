@@ -7,7 +7,9 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 rootDir=$(rootDir)
-certsLocation=/etc/minio/certs
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
+certsLocation=/etc/letsencrypt/live/${domainName}
+# certsLocation=/etc/minio/certs
 
 echo "Adding Minio user" | log
 useradd --system minio-user --shell /sbin/nologin
@@ -30,16 +32,17 @@ echo "MINIO_VOLUMES=\"/minio/\"" >> /etc/default/minio
 ips=$(getServerIPAll)
 echo "MINIO_PUBLIC_IPS=${ips// /,}" >> /etc/default/minio
 echo "MINIO_OPTS=\"-C /etc/minio --certs-dir $certsLocation --address :443\"" >> /etc/default/minio
+# echo "MINIO_DOMAIN=${domainName}" >> /etc/default/minio 
 setcap 'cap_net_bind_service=+ep' /usr/local/bin/minio
 
 echo "Adding Systemd Service" | log
 curlDownload https://raw.githubusercontent.com/minio/minio-service/master/linux-systemd/minio.service
 mv minio.service /etc/systemd/system
 
-echo "Generating self-signed certificate" | log
-mkdir -p $certsLocation/
-openssl req -x509 -sha256 -newkey rsa:2048 -keyout $certsLocation/private.key -out $certsLocation/public.crt -days 1024 -nodes -subj '/CN=localhost'
-chown -R minio-user:minio-user $certsLocation
+#echo "Generating self-signed certificate" | log
+#mkdir -p $certsLocation/
+#openssl req -x509 -sha256 -newkey rsa:2048 -keyout $certsLocation/private.key -out $certsLocation/public.crt #-days 1024 -nodes -subj '/CN=localhost'
+#chown -R minio-user:minio-user $certsLocation
 
 echo "Starting Minio service" | log
 systemctl enable minio
@@ -52,7 +55,7 @@ apt install jq -y
 access_key=$(cat /minio/.minio.sys/config/config.json | jq '.credentials._[]|select(.key|test("access_key")).value' | tr -d '"')
 secret_key=$(cat /minio/.minio.sys/config/config.json | jq '.credentials._[]|select(.key|test("secret_key")).value' | tr -d '"')
 
-descriptionAppend "Minio Web UI: https://${CWM_SERVERIP}"
+descriptionAppend "Minio Web UI: https://${domainName}"
 descriptionAppend "Minio Access key: $access_key"
 descriptionAppend "Minio Secret key: $secret_key"
 descriptionAppend " "
