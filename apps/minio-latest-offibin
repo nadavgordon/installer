@@ -10,6 +10,7 @@ rootDir=$(rootDir)
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 certsLetsencrypt=/etc/letsencrypt/live/${domainName}
 certsMinio=/etc/minio/certs
+certsUpdateService=/opt/update-certs.sh
 
 echo "Adding Minio user" | log
 useradd --system minio-user --shell /sbin/nologin
@@ -40,7 +41,7 @@ curlDownload https://raw.githubusercontent.com/minio/minio-service/master/linux-
 mv minio.service /etc/systemd/system
 
 echo "Generating certificates" | log
-mkdir -p $certsLocation/
+mkdir -p $certsMinio/
 cp ${certsLetsencrypt}/fullchain.pem ${certsMinio}/public.crt
 cp ${certsLetsencrypt}/privkey.pem ${certsMinio}/private.key
 chown -R minio-user:minio-user $certsMinio
