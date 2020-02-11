@@ -9,14 +9,26 @@ fi
 
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
-echo "Opening port 80 for letsencrypt" | log
-ufw allow http
+ok=1
+n=0
+until [ $n -ge 3 ]; do
 
-echo "Retrieving SSL domain certification" | log
-certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --dry-run
-waitOrStop 0
+    if certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --test-cert | grep -q -E '(fail|error|not )'; then
 
-tag ssl-ready.success
+        n=$[$n+1]
+        sleep 3
+
+    else
+
+        $ok=0
+        break
+
+    fi
+
+done
+
+waitOrStop $ok
+
 tagScript success
 
 exit 0
