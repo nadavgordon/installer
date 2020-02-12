@@ -211,7 +211,7 @@ until [ $n -ge $times ]; do
     if eval $action | grep -q -E $filter; then
 
         n=$[$n+1]
-        sleep 3
+        sleep 10
 
     else
 
