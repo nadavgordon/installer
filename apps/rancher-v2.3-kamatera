@@ -51,7 +51,8 @@ cp $rootDir/tweaks/extras/rancher/register.conf /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-available/register.conf /etc/nginx/sites-enabled/register.conf
 systemctl restart nginx
 # creating certbot
-certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${rancherDomain} 
+execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${rancherDomain} 
+waitOrStop 0
 # remove certbot routing
 unlink /etc/nginx/sites-enabled/register.conf
 

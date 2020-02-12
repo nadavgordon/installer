@@ -196,7 +196,7 @@ function apt() {
     
 }
 
-# run action multiple times and analyze its output, return success/fail if found
+# run action multiple times and analyze its output, return fail if found
 # all params are required
 # example: execSpecial 3 'error' [COMMAND]
 function execSpecial(){

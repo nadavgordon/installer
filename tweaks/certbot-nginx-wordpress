@@ -11,7 +11,8 @@ checkTagExist certbot-nginx.success
 
 ### install certificate on a wordpress domain ###
 domain=$(wp option get siteurl --allow-root --path=/var/www/html/ | awk -F[/:] '{print $4}')
-certbot --nginx --quiet --redirect -d $domain | log
+execSpecial 3 '(fail|error)' certbot --nginx --quiet --redirect -d $domain | log
+waitOrStop 0
 
 tag certbot-nginx-wordpress.success
 tagScript success
