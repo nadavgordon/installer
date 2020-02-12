@@ -9,9 +9,10 @@ fi
 
 rootDir=$(rootDir)
 checkTagExist nginx.success
-checkTagExist nginx-enable-ssl.success
+checkTagExist nginx-enable-ssl-letsencrypt.success
 elasticVersion="7.4.2"
 kibanaVersion="7.4.2"
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Adding repo to apt" | log
 curlDownload https://artifacts.elastic.co/GPG-KEY-elasticsearch
@@ -54,7 +55,7 @@ echo "admin:$(openssl passwd -apr1 ${ADMINPASSWORD})" > /etc/nginx/htpasswd.user
 echo "Setting nginx configuration" | log
 nginxConfigPath=/etc/nginx/sites-available/kibana.conf
 # copy readymade config to nginx sites
-cp -f $rootDir/tweaks/extras/elasticsearch-nginx/elasticsearch-nginx-config $nginxConfigPath
+cp -f $rootDir/tweaks/extras/elasticsearch-nginx/kibana.conf /etc/nginx/sites-available/
 # place elasticPort for elasticsearch upstream
 sed -i '/server/s/ELASTIC_PLACEHOLDER/127.0.0.1:'"${elasticPort}"'/g' $nginxConfigPath
 # place kibanaPort for kibana upstream
@@ -63,7 +64,7 @@ sed -i '/server/s/KIBANA_PLACEHOLDER/127.0.0.1:'"${kibanaPort}"'/g' $nginxConfig
 ln -s $nginxConfigPath /etc/nginx/sites-enabled/
 unlink /etc/nginx/sites-enabled/default
 unlink /etc/nginx/sites-enabled/default-ssl
-service nginx reload
+service nginx restart
 
 echo "Tweaking optimal performance settings" | log
 # reduce vm swappiness to minimum
@@ -91,7 +92,7 @@ systemctl restart kibana.service
 echo "Adding descriptions" | log
 descriptionAppend "Elasticsearch Username: admin"
 descriptionAppend "Elasticsearch Password: ${ADMINPASSWORD}"
-descriptionAppend "Elasticsearch (Kibana) Web UI: https://${CWM_SERVERIP}"
+descriptionAppend "Elasticsearch (Kibana) Web UI: https://${domainName}"
 descriptionAppend " "
 descriptionAppend "Elasticsearch config files location: /etc/elasticsearch/"
 descriptionAppend "Kibana config file: /etc/kibana/kibana.yml"

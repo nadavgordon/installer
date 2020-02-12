@@ -13,6 +13,7 @@ checkTagExist nginx-enable-php-ssl.success
 versionFilename=2018-04-22b
 appPath=/var/www/html
 rootDir=$(rootDir)
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Installing DokuWiki" | log
 
@@ -51,12 +52,12 @@ cat << EOF > ${appPath}/data/pages/start.txt
 ====== You are almost done ======
 
 
-Please proceed to [[https://${CWM_SERVERIP}/install.php|this link]] for additional configuration
+Please proceed to [[https://${domainName}/install.php|this link]] for additional configuration
 EOF
 chown www-data:www-data $appPath/data/pages/start.txt
 
 echo "Adding descriptions" | log
-descriptionAppend "DokuWiki Web UI: https://${CWM_SERVERIP//./-}.cloud-xip.io"
+descriptionAppend "DokuWiki Web UI: https://${domainName}"
 descriptionAppend " "
 
 tagScript success

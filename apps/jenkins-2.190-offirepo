@@ -9,6 +9,7 @@ fi
 # packageVersion="2.176.1"
 packageVersion=2.190.\*
 assignedPort="9090"
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Setting jenkins repository and key" | log
 curlDownload https://pkg.jenkins.io/debian-stable/jenkins.io.key
@@ -40,7 +41,7 @@ systemctl restart jenkins
 
 echo "Adding descriptions" | log
 
-descriptionAppend "Jenkins Web UI: https://${CWM_SERVERIP}:${assignedPort}"
+descriptionAppend "Jenkins Web UI: https://${domainName}:${assignedPort}"
 descriptionAppend "Jenkins Unlock key: $unlockkey"
 descriptionAppend " "
 descriptionAppend "If main page is blank after initial setup, restart the server:"
