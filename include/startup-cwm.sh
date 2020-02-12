@@ -196,4 +196,35 @@ function apt() {
     
 }
 
+# run action multiple times and analyze its output, return success/fail if found
+# all params are required
+# example: execSpecial 3 'error' [COMMAND]
+function execSpecial(){
+
+local times=$1
+local filter=$2
+local action="${@:3}"
+local ok=1
+local n=0
+until [ $n -ge $times ]; do
+
+    if eval $action | grep -q -E $filter; then
+
+        n=$[$n+1]
+        sleep 3
+
+    else
+
+        ok=0
+        break
+
+    fi
+
+done
+
+return $ok
+
+}
+
+
 CWM_SERVERIP="$(getServerIP)"

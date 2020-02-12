@@ -34,7 +34,7 @@ systemctl restart nginx.service
 waitOrStop 0
 
 echo "Generating letsencrypt certificates with certbot" | log
-certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${domainName} --dry-run
+execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${domainName} --test-cert
 waitOrStop 0
 unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
 

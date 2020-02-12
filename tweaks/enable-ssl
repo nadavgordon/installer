@@ -8,27 +8,11 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
+execSpecial 3 '(fail|error)' certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --test-cert
 
-ok=1
-n=0
-until [ $n -ge 3 ]; do
+waitOrStop 0
 
-    if certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --test-cert | grep -q -E '(fail|error|not )'; then
-
-        n=$[$n+1]
-        sleep 3
-
-    else
-
-        $ok=0
-        break
-
-    fi
-
-done
-
-waitOrStop $ok
-
+tag ssl-ready.success
 tagScript success
 
 exit 0
