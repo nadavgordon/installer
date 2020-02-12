@@ -15,7 +15,7 @@ appPath=/var/www/html
 versionFilename=8.7.9
 rootDir=$(rootDir)
 drupaluser_password="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16 ; echo '')"
-
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Creating Drupal Database" | log
 mysql --defaults-file=/root/.my.cnf -h localhost <<EOF
@@ -97,7 +97,7 @@ sleep 5
 waitOrStop 0
 
 echo "Adding descriptions" | log
-descriptionAppend "Drupal Web UI: https://${CWM_SERVERIP}/user/login"
+descriptionAppend "Drupal Web UI: https://${domainName}/user/login"
 descriptionAppend "Drupal Username: admin"
 descriptionAppend "Drupal Password: ${ADMINPASSWORD}"
 descriptionAppend " "
