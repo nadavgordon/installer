@@ -15,7 +15,7 @@ phpVersion=$(php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d".")
 appVersion=18.0.0
 appPath=/var/www/html
 rootDir=$(rootDir)
-domain="${CWM_SERVERIP//./-}.cloud-xip.io"
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 ndisk="$(lsblk)"
 if [[ $ndisk == *"sdb"* ]]; then
@@ -79,11 +79,11 @@ sed -i "s/;opcache.revalidate_freq=2/opcache.revalidate_freq=1/g" $phpIniPath
 # modify www.conf settings
 sed -i '/env\[PATH\]/s/^;//g' /etc/php/$phpVersion/fpm/pool.d/www.conf
 # Add Server IP to Trusted Servers
-sed -i "s/0 => 'localhost',/0 => 'localhost', 1 => '${CWM_SERVERIP}', 2 => '${domain}',/" $appPath/config/config.php
+sed -i "s/0 => 'localhost',/0 => 'localhost', 1 => '${CWM_SERVERIP}', 2 => '${domainName}',/" $appPath/config/config.php
 systemctl restart php$phpVersion-fpm.service
 
 echo "Adding descriptions" | log
-descriptionAppend "Nextcloud Web UI: https://${domain}/"
+descriptionAppend "Nextcloud Web UI: https://${domainName}/"
 descriptionAppend "Nextcloud Username: admin "
 descriptionAppend "Nextcloud Password: ${ADMINPASSWORD} "
 descriptionAppend " "

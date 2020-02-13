@@ -7,8 +7,7 @@ elif [ -f "../include/startup.sh" ]; then
     . ../include/startup.sh
 fi
 
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-execSpecial 3 '(fail|error)' certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${domainName} --test-cert
+execSpecial 3 '(fail|error)' certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${CWM_DOMAIN} --test-cert
 
 waitOrStop 0
 

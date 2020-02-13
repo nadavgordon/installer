@@ -227,4 +227,5 @@ return $ok
 }
 
 
-CWM_SERVERIP="$(getServerIP)"
+export CWM_SERVERIP="$(getServerIP)"
+export CWM_DOMAIN="${CWM_SERVERIP//./-}.cloud-xip.io"

@@ -11,6 +11,7 @@ checkTagExist httpd.success
 
 rootDir=$(rootDir)
 myadminPath=/var/www/html/phpmyadmin
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Installing phpMyAdmin" | log
 mkdir -p $myadminPath
@@ -32,7 +33,7 @@ echo "Generating blowfish_secret string and replacing it in config.inc.php" | lo
 blowfish_secret=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''`
 sed -i "/$cfg\['blowfish_secret.*/c\$cfg['blowfish_secret'] = '"$blowfish_secret"';" config.inc.php
 
-descriptionAppend "phpMyAdmin Web UI: http://${CWM_SERVERIP}/phpmyadmin"
+descriptionAppend "phpMyAdmin Web UI: http://${domainName}/phpmyadmin"
 descriptionAppend " "
 
 tag phpmyadmin.success

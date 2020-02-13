@@ -16,6 +16,7 @@ appPath=/var/www/html
 appVersion=3.7.2
 appBranch=stable37
 rootDir=$(rootDir)
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Downloading and extracting application" | log
 cd $rootDir/temp
@@ -52,7 +53,7 @@ if [ -f "$rootDir/temp/phpmyadmin.success" ]; then
 fi
 
 echo "Creating nginx configurations" | log
-cp -f $rootDir/tweaks/extras/moodle-nginx/moodle-nginx-config /etc/nginx/sites-available/moodle.conf
+cp -f $rootDir/tweaks/extras/moodle-nginx/moodle.conf /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-available/moodle.conf /etc/nginx/sites-enabled/
 unlink /etc/nginx/sites-enabled/default
 unlink /etc/nginx/sites-enabled/default-ssl
@@ -60,7 +61,7 @@ systemctl restart nginx.service
 
 echo "Adding descriptions" | log
 
-descriptionAppend "Moodle Web UI: https://${CWM_SERVERIP}"
+descriptionAppend "Moodle Web UI: https://${domainName}"
 descriptionAppend "Moodle Username: admin"
 descriptionAppend "Moodle Password: ${ADMINPASSWORD}"
 descriptionAppend " "

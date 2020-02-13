@@ -10,14 +10,13 @@ checkTagExist nginx.success
 checkTagExist certbot-nginx.success
 
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-certsPath=/etc/letsencrypt/live/${domainName}
+certsPath=/etc/letsencrypt/live/${CWM_DOMAIN}
 certsRoute=/etc/nginx/snippets/letsencrypt-nginx-certs.conf
-renewConf=/etc/letsencrypt/renewal/$domainName.conf
-modPrivKey=$certsPath/${domainName}.key
-modCert=$certsPath/${domainName}.crt
-modChain=$certsPath/${domainName}.chain.crt
-modFullChain=$certsPath/${domainName}.fullchain.crt
+renewConf=/etc/letsencrypt/renewal/$CWM_DOMAIN.conf
+modPrivKey=$certsPath/${CWM_DOMAIN}.key
+modCert=$certsPath/${CWM_DOMAIN}.crt
+modChain=$certsPath/${CWM_DOMAIN}.chain.crt
+modFullChain=$certsPath/${CWM_DOMAIN}.fullchain.crt
 
 echo "Enabling certbot for machine" | log
 mkdir -p /var/lib/letsencrypt/.well-known
@@ -34,7 +33,7 @@ systemctl restart nginx.service
 waitOrStop 0
 
 echo "Generating letsencrypt certificates with certbot" | log
-execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${domainName} --test-cert
+execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${CWM_DOMAIN} --test-cert
 waitOrStop 0
 unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
 
