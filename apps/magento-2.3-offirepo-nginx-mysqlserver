@@ -14,6 +14,7 @@ checkTagExist nginx-enable-php-ssl.success
 appPath=/var/www/html
 appVersion=2.3.2
 rootDir=$(rootDir)
+domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Creating Magento Database" | log
 mysql --defaults-file=/root/.my.cnf -h localhost <<EOF
@@ -77,22 +78,22 @@ waitOrStop 0
 
 echo "Setting nginx config" | log
 # main magento config
-cp $rootDir/tweaks/extras/magento-nginx/magento-nginx-config /etc/nginx/sites-available/magento
+cp $rootDir/tweaks/extras/magento-nginx/magento.conf /etc/nginx/sites-available/
 # specific configs supplied by magento install, included by main magento config
 mkdir -p /etc/nginx/config
-cp $appPath/nginx.conf.sample /etc/nginx/config/magento.conf.sample
+cp $appPath/nginx.conf.sample /etc/nginx/config/magento.sample.conf
 # tweak locations in magento config to allow for user themes and folders
 tweakFilePath=$rootDir/tweaks/extras/magento-nginx/magento-locations-allow-custom
-perl -i -p0e 's/location \/ .*?args;\n}/`cat $ARGV[0]`/se' -- /etc/nginx/config/magento.conf.sample "$tweakFilePath"
+perl -i -p0e 's/location \/ .*?args;\n}/`cat $ARGV[0]`/se' -- /etc/nginx/config/magento.sample.conf "$tweakFilePath"
 # Symlink magento vhost
-ln -s /etc/nginx/sites-available/magento /etc/nginx/sites-enabled/magento
+ln -s /etc/nginx/sites-available/magento.conf /etc/nginx/sites-enabled/
 # Remove default vhosts
 unlink /etc/nginx/sites-enabled/default
 unlink /etc/nginx/sites-enabled/default-ssl
 systemctl restart nginx
 
 echo "Adding descriptions" | log
-descriptionAppend "Magento Admin Web UI: https://${CWM_SERVERIP}${ADMIN_URI}"
+descriptionAppend "Magento Admin Web UI: https://${domainName}${ADMIN_URI}"
 descriptionAppend "Magento Email: ${ADMINEMAIL}"
 descriptionAppend "Magento Username: admin"
 descriptionAppend "Magento Password: ${ADMINPASSWORD}" 
