@@ -7,7 +7,7 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 rootDir=$(rootDir)
-pleskDomain="${CWM_SERVERIP//./-}.cloud-xip.io"
+pleskDomain="${CWM_DOMAIN}"
 
 echo "Preparing FQDN for installation process" | log
 sed -i "2i${CWM_SERVERIP} ${pleskDomain}" /etc/hosts

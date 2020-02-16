@@ -63,7 +63,7 @@ unlink /etc/nginx/sites-enabled/default-ssl
 systemctl restart nginx
 
 echo "Adding descriptions" | log
-descriptionAppend "Redmine Web UI: https://${CWM_SERVERIP}"
+descriptionAppend "Redmine Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend "Redmine Initial username: admin"
 descriptionAppend "Redmine Initial password: admin"
 descriptionAppend " "

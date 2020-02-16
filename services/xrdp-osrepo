@@ -21,7 +21,7 @@ systemctl restart xrdp
 echo "Adding descriptions" | log
 descriptionAppend "Connect using Microsoft Remote Desktop Client (RDP Client)"
 descriptionAppend " "
-descriptionAppend "Desktop Address: ${CWM_SERVERIP}"
+descriptionAppend "Desktop Address: ${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend "Username: root"
 descriptionAppend "Password: ${ADMINPASSWORD}"
 descriptionAppend " "

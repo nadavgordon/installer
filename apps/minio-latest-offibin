@@ -6,6 +6,8 @@ elif [ -f "../include/startup.sh" ]; then
     . ../include/startup.sh
 fi
 
+checkTagExist ssl-ready.success
+
 rootDir=$(rootDir)
 certsLetsencrypt=/etc/letsencrypt/live/${CWM_DISPLAYED_ADDRESS}
 certsMinio=/etc/minio/certs
