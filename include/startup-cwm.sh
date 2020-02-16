@@ -198,29 +198,34 @@ return $ok
 }
 
 
-# parse cwm config into global params
-CONFIG=`cat $CWM_CONFIGFILE`
-STD_IFS=$IFS
-IFS=$'\n'
-for d in $CONFIG; do
+if [ ! -f "temp/globals-set.success" ]; then
 
-    key=$(echo $d | cut -f1 -d"=")
-    value=$(echo $d | cut -f2 -d"=")
-    export "CWM_${key^^}"="$value"
+    # parse cwm config into global params
+    CONFIG=`cat $CWM_CONFIGFILE`
+    STD_IFS=$IFS
+    IFS=$'\n'
+    for d in $CONFIG; do
 
-done
-IFS=$STD_IFS
+        key=$(echo $d | cut -f1 -d"=")
+        value=$(echo $d | cut -f2 -d"=")
+        export "CWM_${key^^}"="$value"
 
-# additional cwm global params
-export ADMINEMAIL=$CWM_EMAIL
-export ADMINPASSWORD="$CWM_PASSWORD"
-export CWM_WANNICIDS=($(cat $CWM_CONFIGFILE | grep ^vlan.*=wan-.* | cut -f 1 -d"=" | cut -f 2 -d"n"))
-export CWM_LANNICIDS=($(cat $CWM_CONFIGFILE | grep ^vlan.*=lan-.* | cut -f 1 -d"=" | cut -f 2 -d"n"))
-# export CWM_DISKS=`cat $CWM_CONFIGFILE | grep ^disk.*size=.* | wc -l`
-export CWM_UUID=$(cat /sys/class/dmi/id/product_serial | cut -d '-' -f 2,3 | tr -d ' -' | sed 's/./&-/20;s/./&-/16;s/./&-/12;s/./&-/8')
-export CWM_SERVERIP="$(getServerIP)"
-export CWM_DOMAIN="${CWM_SERVERIP//./-}.cloud-xip.io"
-export CWM_DISPLAYED_ADDRESS=${CWM_SERVERIP}
+    done
+    IFS=$STD_IFS
+
+    # additional cwm global params
+    export ADMINEMAIL=$CWM_EMAIL
+    export ADMINPASSWORD="$CWM_PASSWORD"
+    export CWM_WANNICIDS=($(cat $CWM_CONFIGFILE | grep ^vlan.*=wan-.* | cut -f 1 -d"=" | cut -f 2 -d"n"))
+    export CWM_LANNICIDS=($(cat $CWM_CONFIGFILE | grep ^vlan.*=lan-.* | cut -f 1 -d"=" | cut -f 2 -d"n"))
+    # export CWM_DISKS=`cat $CWM_CONFIGFILE | grep ^disk.*size=.* | wc -l`
+    export CWM_UUID=$(cat /sys/class/dmi/id/product_serial | cut -d '-' -f 2,3 | tr -d ' -' | sed 's/./&-/20;s/./&-/16;s/./&-/12;s/./&-/8')
+    export CWM_SERVERIP="$(getServerIP)"
+    export CWM_DOMAIN="${CWM_SERVERIP//./-}.cloud-xip.io"
+    export CWM_DISPLAYED_ADDRESS=${CWM_SERVERIP}
+
+    touch temp/globals-set.success
+fi
 
 # fail install if cwm api key or secret is missing
 if [ -z "$CWM_NO_API_KEY" ] && [[ -z "$CWM_APICLIENTID" || -z "$CWM_APISECRET" ]]; then
