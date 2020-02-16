@@ -10,9 +10,8 @@ fi
 checkTagExist ssl-ready.success
 
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-certsPath=/etc/letsencrypt/live/${domainName}
-certsArchivePath=/etc/letsencrypt/archive/${domainName}
+certsPath=/etc/letsencrypt/live/${CWM_DISPLAYED_ADDRESS}
+certsArchivePath=/etc/letsencrypt/archive/${CWM_DISPLAYED_ADDRESS}
 certsUpdateService=/opt/update-certs.sh
 certGeneratedName="haproxy-fullcert.pem"
 
@@ -47,7 +46,7 @@ cd ${certsArchivePath}
 rm ${certGeneratedName}
 cat `find "$(pwd)" -type f -name "*fullchain*"` `find "$(pwd)" -type f -name "*privk*"` > ${certGeneratedName}
 cd ${certsPath}
-ln -s haproxy-fullcert.pem ../../archive/${domainName}/${certGeneratedName}
+ln -s haproxy-fullcert.pem ../../archive/${CWM_DISPLAYED_ADDRESS}/${certGeneratedName}
 service haproxy reload
 
 EOF
@@ -59,9 +58,9 @@ sed -i '\|ExecStart|s|-q renew|-q renew --post-hook "/bin/bash '${certsUpdateSer
 systemctl daemon-reload
 
 echo "Adding descriptions" | log
-descriptionAppend "HAProxy Address: ${domainName}"
+descriptionAppend "HAProxy Address: ${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend " "
-descriptionAppend "HAProxy Stats Web UI: https://${domainName}:8404/stats"
+descriptionAppend "HAProxy Stats Web UI: https://${CWM_DISPLAYED_ADDRESS}:8404/stats"
 descriptionAppend "HAProxy Stats Web UI Username: admin"
 descriptionAppend "HAProxy Stats Web UI Password: ${ADMINPASSWORD}"
 descriptionAppend " "

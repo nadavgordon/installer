@@ -12,7 +12,6 @@ checkTagExist nginx.success
 checkTagExist nginx-enable-ssl-letsencrypt.success
 elasticVersion="7.4.2"
 kibanaVersion="7.4.2"
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Adding repo to apt" | log
 curlDownload https://artifacts.elastic.co/GPG-KEY-elasticsearch
@@ -92,7 +91,7 @@ systemctl restart kibana.service
 echo "Adding descriptions" | log
 descriptionAppend "Elasticsearch Username: admin"
 descriptionAppend "Elasticsearch Password: ${ADMINPASSWORD}"
-descriptionAppend "Elasticsearch (Kibana) Web UI: https://${domainName}"
+descriptionAppend "Elasticsearch (Kibana) Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend " "
 descriptionAppend "Elasticsearch config files location: /etc/elasticsearch/"
 descriptionAppend "Kibana config file: /etc/kibana/kibana.yml"

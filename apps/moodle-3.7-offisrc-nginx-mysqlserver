@@ -16,7 +16,6 @@ appPath=/var/www/html
 appVersion=3.7.2
 appBranch=stable37
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Downloading and extracting application" | log
 cd $rootDir/temp
@@ -61,7 +60,7 @@ systemctl restart nginx.service
 
 echo "Adding descriptions" | log
 
-descriptionAppend "Moodle Web UI: https://${domainName}"
+descriptionAppend "Moodle Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend "Moodle Username: admin"
 descriptionAppend "Moodle Password: ${ADMINPASSWORD}"
 descriptionAppend " "

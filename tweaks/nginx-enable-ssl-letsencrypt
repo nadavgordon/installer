@@ -35,6 +35,7 @@ waitOrStop 0
 echo "Generating letsencrypt certificates with certbot" | log
 execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${CWM_DOMAIN} --test-cert
 waitOrStop 0
+export CWM_DISPLAYED_ADDRESS=${CWM_DOMAIN}
 unlink /etc/nginx/sites-enabled/letsencrypt-nginx-register.conf
 
 echo "Configuring certbot renewal service" | log

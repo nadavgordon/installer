@@ -8,8 +8,8 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 execSpecial 3 '(fail|error)' certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${CWM_DOMAIN} --test-cert
-
 waitOrStop 0
+export CWM_DISPLAYED_ADDRESS=${CWM_DOMAIN}
 
 tag ssl-ready.success
 tagScript success

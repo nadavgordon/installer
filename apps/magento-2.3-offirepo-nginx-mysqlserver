@@ -14,7 +14,6 @@ checkTagExist nginx-enable-php-ssl.success
 appPath=/var/www/html
 appVersion=2.3.2
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Creating Magento Database" | log
 mysql --defaults-file=/root/.my.cnf -h localhost <<EOF
@@ -54,7 +53,7 @@ composer install -v | log
 waitOrStop 0
 
 echo "Installing Magento" | log
-$appPath/bin/magento setup:install --base-url-secure=https://${domainName}/ --db-host=localhost --db-name=magentodb --db-user=magentouser --db-password=${ADMINPASSWORD} --admin-firstname=admin --admin-lastname=admin --admin-email=${ADMINEMAIL} --admin-user=admin --admin-password=${ADMINPASSWORD} --language=en_US --currency=USD --timezone=$(cat /etc/timezone) --use-rewrites=1 --use-secure=1 --use-secure-admin=1 | log
+$appPath/bin/magento setup:install --base-url-secure=https://${CWM_DISPLAYED_ADDRESS}/ --db-host=localhost --db-name=magentodb --db-user=magentouser --db-password=${ADMINPASSWORD} --admin-firstname=admin --admin-lastname=admin --admin-email=${ADMINEMAIL} --admin-user=admin --admin-password=${ADMINPASSWORD} --language=en_US --currency=USD --timezone=$(cat /etc/timezone) --use-rewrites=1 --use-secure=1 --use-secure-admin=1 | log
 
 ADMIN_URI=`grep "Admin URI:" $CWM_LOGDIR/*.log | rev | cut -d ' ' -f 1 | rev | head -1`
 # ADMIN_URI=`php /var/www/html/bin/magento info:adminuri | rev | cut -d ' ' -f 1 | rev`
@@ -70,7 +69,7 @@ chmod u+x bin/magento
 echo "Disabling sign static files and forcing cache refresh" | log
 cd $appPath
 bin/magento config:set dev/static/sign 0
-curl https://${domainName} --insecure -o /dev/null
+curl https://${CWM_DISPLAYED_ADDRESS} --insecure -o /dev/null
 waitOrStop 0
 bin/magento setup:static-content:deploy -f
 bin/magento cache:clean
@@ -93,7 +92,7 @@ unlink /etc/nginx/sites-enabled/default-ssl
 systemctl restart nginx
 
 echo "Adding descriptions" | log
-descriptionAppend "Magento Admin Web UI: https://${domainName}${ADMIN_URI}"
+descriptionAppend "Magento Admin Web UI: https://${CWM_DISPLAYED_ADDRESS}${ADMIN_URI}"
 descriptionAppend "Magento Email: ${ADMINEMAIL}"
 descriptionAppend "Magento Username: admin"
 descriptionAppend "Magento Password: ${ADMINPASSWORD}" 

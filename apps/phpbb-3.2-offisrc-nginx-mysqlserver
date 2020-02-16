@@ -15,7 +15,6 @@ appVersion=3.2.7
 appArchive=phpBB-$appVersion.tar.bz2
 appPath=/var/www/html
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Downloading PhpBB3" | log
 mkdir -p $appPath
@@ -88,7 +87,7 @@ chown -R www-data:www-data $appPath
 
 echo "Adding descriptions" | log
 
-descriptionAppend "phpBB3 Web UI: https://${domainName}/"
+descriptionAppend "phpBB3 Web UI: https://${CWM_DISPLAYED_ADDRESS}/"
 descriptionAppend "phpBB3 Username: admin "
 descriptionAppend "phpBB3 Password: ${ADMINPASSWORD} "
 descriptionAppend " "

@@ -7,8 +7,7 @@ elif [ -f "../include/startup.sh" ]; then
 fi
 
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-certsLetsencrypt=/etc/letsencrypt/live/${domainName}
+certsLetsencrypt=/etc/letsencrypt/live/${CWM_DISPLAYED_ADDRESS}
 certsMinio=/etc/minio/certs
 certsUpdateService=/opt/update-certs.sh
 
@@ -33,7 +32,7 @@ echo "MINIO_VOLUMES=\"/minio/\"" >> /etc/default/minio
 ips=$(getServerIPAll)
 echo "MINIO_PUBLIC_IPS=${ips// /,}" >> /etc/default/minio
 echo "MINIO_OPTS=\"-C /etc/minio --certs-dir $certsMinio --address :443\"" >> /etc/default/minio
-# echo "MINIO_DOMAIN=${domainName}" >> /etc/default/minio 
+# echo "MINIO_DOMAIN=${CWM_DISPLAYED_ADDRESS}" >> /etc/default/minio 
 setcap 'cap_net_bind_service=+ep' /usr/local/bin/minio
 
 echo "Adding Systemd Service" | log
@@ -70,7 +69,7 @@ apt install jq -y
 access_key=$(cat /minio/.minio.sys/config/config.json | jq '.credentials._[]|select(.key|test("access_key")).value' | tr -d '"')
 secret_key=$(cat /minio/.minio.sys/config/config.json | jq '.credentials._[]|select(.key|test("secret_key")).value' | tr -d '"')
 
-descriptionAppend "Minio Web UI: https://${domainName}"
+descriptionAppend "Minio Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend "Minio Access key: $access_key"
 descriptionAppend "Minio Secret key: $secret_key"
 descriptionAppend " "

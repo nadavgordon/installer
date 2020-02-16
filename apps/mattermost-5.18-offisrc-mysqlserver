@@ -13,8 +13,7 @@ checkTagExist ssl-ready.success
 appVersion=5.18.2
 appPath=/opt/mattermost
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-certsPath=/etc/letsencrypt/live/${domainName}
+certsPath=/etc/letsencrypt/live/${CWM_DISPLAYED_ADDRESS}
 mmuser_name="mmuser"
 mmuser_password=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16 ; echo ''`
 
@@ -84,7 +83,7 @@ echo "Adding descriptions" | log
 descriptionAppend "Mattermost Database Username: ${mmuser_name}"
 descriptionAppend "Mattermost Database Password: ${mmuser_password}"
 descriptionAppend " "
-descriptionAppend "Mattermost Web UI: https://${domainName}"
+descriptionAppend "Mattermost Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend "# Open Web UI to set Admin Username and Password"
 descriptionAppend " "
 

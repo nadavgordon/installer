@@ -9,8 +9,6 @@ fi
 checkTagExist nginx.success
 
 rootDir=$(rootDir)
-domainName="${CWM_SERVERIP//./-}.cloud-xip.io"
-
 
 echo "Installing snap and then rocket.chat" | log
 apt install snapd -y
@@ -33,7 +31,7 @@ unlink /etc/nginx/sites-enabled/default-ssl
 systemctl reload nginx
 
 echo "Adding descriptions" | log
-descriptionAppend "Rocket.chat Web UI: https://${domainName}"
+descriptionAppend "Rocket.chat Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend " "
 descriptionAppend "Rocket.chat application directories:"
 descriptionAppend "/snap/rocketchat-server/"
