@@ -10,6 +10,7 @@ fi
 execSpecial 3 '(fail|error)' certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${CWM_DOMAIN} --test-cert
 waitOrStop 0
 export CWM_DISPLAYED_ADDRESS="${CWM_DOMAIN}"
+tag global-domain-set.success
 
 tag ssl-ready.success
 tagScript success

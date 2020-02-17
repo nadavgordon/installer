@@ -228,10 +228,10 @@ if [ ! -f "$rootDir/temp/globals-set.success" ]; then
     touch $rootDir/temp/globals-set.success
 fi
 
-if [ ! -f "$rootDir/temp/global-domain-set.success" ]; then
+if [ -f "$rootDir/temp/global-domain-set.success" ]; then
 
     export CWM_DISPLAYED_ADDRESS=${CWM_DOMAIN}
-    
+
 fi
 
 # fail install if cwm api key or secret is missing
