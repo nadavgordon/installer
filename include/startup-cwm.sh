@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rootDir=$(rootDir)
+
 # skip cwm related steps if config file not found
 if [ ! -f "$CWM_CONFIGFILE" ]; then
     #Missing CWM config file. Skipping.
@@ -197,8 +199,7 @@ return $ok
 
 }
 
-
-if [ ! -f "temp/globals-set.success" ]; then
+if [ ! -f "$rootDir/temp/globals-set.success" ]; then
 
     # parse cwm config into global params
     CONFIG=`cat $CWM_CONFIGFILE`
@@ -224,7 +225,13 @@ if [ ! -f "temp/globals-set.success" ]; then
     export CWM_DOMAIN="${CWM_SERVERIP//./-}.cloud-xip.io"
     export CWM_DISPLAYED_ADDRESS=${CWM_SERVERIP}
 
-    touch temp/globals-set.success
+    touch $rootDir/temp/globals-set.success
+fi
+
+if [ ! -f "$rootDir/temp/global-domain-set.success" ]; then
+
+    export CWM_DISPLAYED_ADDRESS=${CWM_DOMAIN}
+    
 fi
 
 # fail install if cwm api key or secret is missing
