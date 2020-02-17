@@ -1,7 +1,5 @@
 #!/bin/bash
 
-rootDir=$(rootDir)
-
 # skip cwm related steps if config file not found
 if [ ! -f "$CWM_CONFIGFILE" ]; then
     #Missing CWM config file. Skipping.
@@ -198,6 +196,8 @@ done
 return $ok
 
 }
+
+rootDir=$(rootDir)
 
 if [ ! -f "$rootDir/temp/globals-set.success" ]; then
 
