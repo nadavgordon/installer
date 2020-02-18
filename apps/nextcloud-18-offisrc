@@ -42,6 +42,7 @@ EOF
 
 echo "Installing application" | log
 cd $appPath
+rm index.nginx-debian.html
 sudo -u www-data php occ  maintenance:install --database "mysql" --database-name "nextcloud"  --database-user "nextcloud" --database-pass "${ADMINPASSWORD}" --admin-user "admin" --admin-pass "${ADMINPASSWORD}"
 sudo -u www-data php occ db:convert-filecache-bigint --no-interaction
 sudo -u www-data php occ db:add-missing-indices
