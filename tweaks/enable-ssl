@@ -7,7 +7,6 @@ elif [ -f "../include/startup.sh" ]; then
     . ../include/startup.sh
 fi
 
-ufw allow http | log
 execSpecial 3 '(fail|error)' certbot certonly -n --standalone --preferred-challenges http --agree-tos --email ${ADMINEMAIL} -d ${CWM_DOMAIN} --test-cert
 waitOrStop 0
 export CWM_DISPLAYED_ADDRESS="${CWM_DOMAIN}"
