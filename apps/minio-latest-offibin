@@ -9,6 +9,7 @@ fi
 checkTagExist ssl-ready.success
 
 rootDir=$(rootDir)
+minioConfigFile=/minio/.minio.sys/config/config.json
 certsLetsencrypt=/etc/letsencrypt/live/${CWM_DISPLAYED_ADDRESS}
 certsMinio=/etc/minio/certs
 certsUpdateService=/opt/update-certs.sh
@@ -61,15 +62,21 @@ sed -i '\|ExecStart|s|-q renew|-q renew --post-hook "/bin/bash '${certsUpdateSer
 systemctl daemon-reload
 
 echo "Starting Minio service" | log
-systemctl enable minio
-systemctl start minio
+systemctl enable minio.service
+systemctl start minio.service
 waitOrStop 0
 sleep 5
 
 echo "Adding descriptions" | log
-apt install jq -y
-access_key=$(cat /minio/.minio.sys/config/config.json | jq '.credentials._[]|select(.key|test("access_key")).value' | tr -d '"')
-secret_key=$(cat /minio/.minio.sys/config/config.json | jq '.credentials._[]|select(.key|test("secret_key")).value' | tr -d '"')
+# apt install jq -y
+access_key=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16 ; echo '')
+secret_key=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16 ; echo '')
+sed -i 's/minioadmin/'"${access_key}"'/' $minioConfigFile
+sed -i 's/minioadmin/'"${secret_key}"'/' $minioConfigFile
+# access_key=$(jq '.credentials._[]|select(.key == "access_key").value' ${minioConfigFile} | tr -d '"')
+# secret_key=$(jq '.credentials._[]|select(.key == "secret_key").value' ${minioConfigFile} | tr -d '"')
+systemctl restart minio.service
+waitOrStop 0
 
 descriptionAppend "Minio Web UI: https://${CWM_DISPLAYED_ADDRESS}"
 descriptionAppend "Minio Access key: $access_key"
