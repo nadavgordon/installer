@@ -51,7 +51,7 @@ unlink /etc/nginx/sites-enabled/default-ssl
 # ln -s /etc/nginx/sites-available/register.conf /etc/nginx/sites-enabled/register.conf
 systemctl stop nginx
 # creating certbot
-execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --standalone -d ${rancherDomain}
+execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --standalone -d ${rancherDomain} --test-cert
 waitOrStop 0 "Certbot certificates failed to issue."
 # remove certbot routing
 # unlink /etc/nginx/sites-enabled/register.conf
