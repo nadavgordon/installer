@@ -15,7 +15,7 @@ kamateraDriverUrl=https://github.com/OriHoch/docker-machine-driver-kamatera/rele
 
 RANCHER_VERSION=v2.3.3
 vlan=`cat ${CWM_CONFIGFILE}  | grep ^vlan.*=lan-.* | cut -d'=' -f 2`
-rancherDomain="rancher.${CWM_SERVERIP//./-}.cloud-xip.io"
+rancherDomain="${CWM_SERVERIP//./-}.cloud-xip.io"
 
 echo "Installing Jq" | log
 apt install -y jq
@@ -30,9 +30,9 @@ openssl dhparam -out $dhParamFile 2048;
 
 echo "Verifying certbot renewal systemd timer" | log
 systemctl list-timers | grep certbot
-waitOrStop 0
+waitOrStop 0 "no certbot timers found(a)"
 cat /lib/systemd/system/certbot.timer
-waitOrStop 0
+waitOrStop 0 "no certbot timers found(b)"
 if ! cat /lib/systemd/system/certbot.service | grep "service nginx reload"; then
     sed -i 's/-q renew/-q renew --deploy-hook "service nginx reload"/' /lib/systemd/system/certbot.service
 fi
@@ -51,8 +51,8 @@ cp $rootDir/tweaks/extras/rancher/register.conf /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-available/register.conf /etc/nginx/sites-enabled/register.conf
 systemctl restart nginx
 # creating certbot
-execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${rancherDomain}
-waitOrStop 0
+execSpecial 5 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${rancherDomain}
+waitOrStop 0 "certbot could not aquire a certificate"
 # remove certbot routing
 unlink /etc/nginx/sites-enabled/register.conf
 
