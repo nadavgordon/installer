@@ -30,31 +30,32 @@ openssl dhparam -out $dhParamFile 2048;
 
 echo "Verifying certbot renewal systemd timer" | log
 systemctl list-timers | grep certbot
-waitOrStop 0
+waitOrStop 0 "Certbot timers not found.(1/2)"
 cat /lib/systemd/system/certbot.timer
-waitOrStop 0
+waitOrStop 0 "Certbot timers not found.(2/2)"
 if ! cat /lib/systemd/system/certbot.service | grep "service nginx reload"; then
     sed -i 's/-q renew/-q renew --deploy-hook "service nginx reload"/' /lib/systemd/system/certbot.service
 fi
 
 echo "Enabling certbot for Rancher" | log
-mkdir -p /var/lib/letsencrypt/.well-known
-chgrp www-data /var/lib/letsencrypt
-chmod g+s /var/lib/letsencrypt
+# mkdir -p /var/lib/letsencrypt/.well-known
+# chgrp www-data /var/lib/letsencrypt
+# chmod g+s /var/lib/letsencrypt
 # remove default vhosts
 unlink /etc/nginx/sites-enabled/default
 unlink /etc/nginx/sites-enabled/default-ssl
 # copy configs to nginx folders
-cp $rootDir/tweaks/extras/rancher/letsencrypt.conf /etc/nginx/snippets/
-cp $rootDir/tweaks/extras/rancher/register.conf /etc/nginx/sites-available/
+# cp $rootDir/tweaks/extras/rancher/letsencrypt.conf /etc/nginx/snippets/
+# cp $rootDir/tweaks/extras/rancher/register.conf /etc/nginx/sites-available/
 # symlink certbot routing
-ln -s /etc/nginx/sites-available/register.conf /etc/nginx/sites-enabled/register.conf
-systemctl restart nginx
+# ln -s /etc/nginx/sites-available/register.conf /etc/nginx/sites-enabled/register.conf
+systemctl stop nginx
 # creating certbot
-execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --webroot -w /var/lib/letsencrypt/ -d ${rancherDomain}
-waitOrStop 0
+execSpecial 3 '(fail|error)' certbot certonly --agree-tos -n --email ${ADMINEMAIL} --standalone -d ${rancherDomain}
+waitOrStop 0 "Certbot certificates failed to issue."
 # remove certbot routing
-unlink /etc/nginx/sites-enabled/register.conf
+# unlink /etc/nginx/sites-enabled/register.conf
+
 
 echo "Creating nginx configuration" | log
 # copy ssl configs to nginx folders
@@ -68,7 +69,8 @@ sed -i "s|/path/to/your.crt|/etc/letsencrypt/live/${rancherDomain}/fullchain.pem
 sed -i "s|/path/to/your.chain|/etc/letsencrypt/live/${rancherDomain}/chain.pem|" /etc/nginx/snippets/letsencrypt_certs.conf
 # symlink sites
 ln -s /etc/nginx/sites-available/rancher.conf /etc/nginx/sites-enabled/rancher.conf
-systemctl restart nginx
+systemctl start nginx
+waitOrStop 0 "Nginx failed to start up again."
 
 echo "Creating Rancher admin" | log
 mkdir -p /var/lib/rancher 
